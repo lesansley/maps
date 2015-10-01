@@ -1,4 +1,5 @@
-* Setup
-`bower install knowckout`
-`bower install jquery`
-`git init`
+Setup
+
+* `bower install knockout`
+* `bower install jquery`
+* `git init`
