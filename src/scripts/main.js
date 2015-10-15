@@ -211,6 +211,30 @@ var viewModel = {
     }
 };
 
+function MyViewModel() {
+    var self = this;
+    self.myMap = ko.observable({
+        lat: ko.observable(55.166667),
+        lng: ko.observable(-2)});
+}
+
+ko.bindingHandlers.map = {
+
+    init: function (element, valueAccessor, allBindingsAccessor, viewModel) {
+        var mapObj = ko.utils.unwrapObservable(valueAccessor());
+        var latLng = new google.maps.LatLng(
+            ko.utils.unwrapObservable(mapObj.lat),
+            ko.utils.unwrapObservable(mapObj.lng));
+        var mapOptions = { center: latLng,
+                          zoom: 10,
+                          mapTypeId: google.maps.MapTypeId.ROADMAP};
+
+        mapObj.googleMap = new google.maps.Map(element, mapOptions);
+    }
+};
+
+
+/*
 function initialize() {
     var mapCanvas = document.getElementById('map');
     var mapOptions = {
@@ -252,5 +276,6 @@ function initialize() {
         })(castle, marker));
     }
 }
+*/
 //call initialize function on window load event
 google.maps.event.addDomListener(window, 'load', initialize);
