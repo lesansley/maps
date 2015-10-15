@@ -7,16 +7,22 @@
         <title>Northumberland Castle Map</title>
         <link rel="stylesheet" href="styles/style.css">
         <link rel="author" href="humans.txt">
-        <style>
-          #map {
-            width: 900px;
-            height: 600px;
-            background-color: #CCC;
-          }
-        </style>
     </head>
     <body>
-        <div class="map" data-bind="googlemap: { locations: castles, centerLat: 55.166667, centerLng: -2 }"></div>
+        <div class="container">
+            <header class="title">Northumberland Castles</header>
+            <div class="map-container">
+                <div class="map" data-bind="googlemap: { castles: castles, centerLat: 55.166667, centerLng: -2 }"></div>
+            </div>
+            <div>
+                <p>
+                    Castle name: <select data-bind="options: castles,
+                       optionsText: 'name',
+                       value: selectedCastle,
+                       optionsCaption: 'Choose the castle'"></select>
+                </p>
+            </div>
+        </div>
     </body>
     <!--Load the Google Map API script-->
     <script src="https://maps.googleapis.com/maps/api/js"></script>

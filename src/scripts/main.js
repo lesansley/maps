@@ -1,42 +1,49 @@
 ko.bindingHandlers.googlemap = {
-    init: function (element, pos) {
+    init: function (element, object) {
         var
-          centerPos = pos(),
+          castleObject = object(),
           mapOptions = {
             zoom: 10,
-            center: new google.maps.LatLng(centerPos.centerLat, centerPos.centerLng),
+            center: new google.maps.LatLng(castleObject.centerLat, castleObject.centerLng),
             mapTypeId: google.maps.MapTypeId.ROADMAP
         },
         map = new google.maps.Map(element, mapOptions);
 
-        var castleList = viewModel.getCastles();
-        console.log(castleList);
-        for (castle in castleList)
+        // Call resize function
+        google.maps.event.addDomListener(window, "resize", function() {
+            var center = map.getCenter();
+            google.maps.event.trigger(map, "resize");
+            map.setCenter(center);
+        });
+
+        var castleSites = castleObject.castles()
+        for (castle in castleSites)
         {
             var latLng = new google.maps.LatLng(
-                castleList[castle].lat,
-                castleList[castle].lng
+                castleSites[castle].lat,
+                castleSites[castle].lng
             );
             var marker = new google.maps.Marker({
                 position: latLng,
                 map: map,
                 icon: 'images/castle-black15x15.png'
             });
+            google.maps.event.addListener(marker, 'click', (function(castle, marker) {
+                return function() {
+                    console.log("A sidebar will slide open with information and images of the castle");
+                    infobubble.close(map, marker);
+                }
+            })(castle, marker));
             google.maps.event.addListener(marker, 'mouseover', (function(castle, marker) {
-            return function() {
-                var castleName = viewModel.getCastleName(castle);
-                infobubble.open(map, marker);
-                infobubble.setContent(castleName);
-            }
+                return function() {
+                    var castleName = castleSites[castle].name;
+                    infobubble.open(map, marker);
+                    infobubble.setContent(castleName);
+                }
             })(castle, marker));
             google.maps.event.addListener(marker, 'mouseout', (function(castle, marker) {
                 return function() {
                     infobubble.close(map, marker);
-                }
-            })(castle, marker));
-            google.maps.event.addListener(marker, 'click', (function(castle, marker) {
-                return function() {
-                    console.log("A sidebar will slide open with information and images of the castle");
                 }
             })(castle, marker));
         }
@@ -47,16 +54,7 @@ var infobubble = new InfoBubble({
         maxWidth: 300
 });
 
-var viewModel = {
-    getCastles: function() {
-        return model.castles();
-    },
-    getCastleName: function(index) {
-        return model.castles()[index].name;
-    }
-};
-
-var model =  {
+var viewModel =  {
     castles: ko.observableArray([
         { name: "Warkworth Castle", lat: 55.345211, lng: -1.611844 },
         { name: "Dunstaburgh Castle", lat: 55.491568, lng: -1.592444 },
@@ -98,7 +96,8 @@ var model =  {
         { name: "Alnwick Castle", lat: 55.41575, lng: -1.70607 },
         { name: "Harbottle Castle", lat: 55.337, lng: -2.109 },
         { name: "Bothal Castle", lat: 55.173, lng: -1.625 }
-    ])
+    ]),
+    selectedCastle : ko.observable()
 }
 
-ko.applyBindings(model);
+ko.applyBindings(viewModel);

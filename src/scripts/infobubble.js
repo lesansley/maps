@@ -875,8 +875,6 @@ InfoBubble.prototype.draw = function() {
   var arrowSize = this.getArrowSize_();
   var arrowPosition = this.getArrowPosition_();
 
-  console.log('Arrow size: ' + arrowSize);
-  console.log('Arrow position: ' + arrowPosition);
   arrowPosition = arrowPosition / 100;
 
   var pos = projection.fromLatLngToDivPixel(latLng);
@@ -1102,18 +1100,9 @@ InfoBubble.prototype.panToView = function() {
   //var bounds = projection.fromLatLngToContainerPixel(map.getBounds());
 
   var top = pos.y - (height + arrowSize);
-  console.log('Top of bubble: ' + top);
 
   var left = pos.x - (0.5 * width);
   var right = pos.x + (0.5 * width);
-
-  console.log(map.getBounds());
-
-  console.log('Left of bubble: ' + left);
-  console.log('ArrowSize: ' + arrowSize);
-  console.log('Width: ' + width);
-
-  console.log('Left of bubble: ' + left);
 
   // Find out how much space at the top is free
   var spaceTop = centerPos.y - height;
@@ -1142,12 +1131,8 @@ InfoBubble.prototype.panToView = function() {
     map.panBy(left,0);
   }
 
-  //if (map.getCenter() != latLng) {
-    //map.panTo(latLng);
-  //}
 };
 InfoBubble.prototype['panToView'] = InfoBubble.prototype.panToView;
-
 
 /**
  * Converts a HTML string to a document fragment.
