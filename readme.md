@@ -37,3 +37,6 @@ Install Grunt (http://mattbailey.io/a-beginners-guide-to-grunt-redux/)
     * `touch grunt/sass.js`
     * `touch grunt/uglify.js` //minifies Javascript files
     * `touch grunt/watch.js` //runs specified tasks whenever watched files are changed in any way
+
+    ## KO with Google Maps
+    http://jsfiddle.net/stesta/p3ZT4/
