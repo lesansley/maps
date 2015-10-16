@@ -16,7 +16,7 @@
             </div>
             <div>
                 <p>
-                    Castle name: <select data-bind="options: castles,
+                    Castle name: <select data-bind="options: castles.sort(function (l, r) { return l.name > r.name ? 1 : -1 }),
                        optionsText: 'name',
                        value: selectedCastle,
                        optionsCaption: 'Choose the castle'"></select>

@@ -1,7 +1,7 @@
 ko.bindingHandlers.googlemap = {
-    init: function (element, object) {
+    init: function (element, valueAccessor) {
         var
-          castleObject = object(),
+          castleObject = valueAccessor(),
           mapOptions = {
             zoom: 10,
             center: new google.maps.LatLng(castleObject.centerLat, castleObject.centerLng),
@@ -54,8 +54,9 @@ var infobubble = new InfoBubble({
         maxWidth: 300
 });
 
-var viewModel =  {
-    castles: ko.observableArray([
+var viewModel =  function() {
+    var self = this;
+    self.castles = ko.observableArray([
         { name: "Warkworth Castle", lat: 55.345211, lng: -1.611844 },
         { name: "Dunstaburgh Castle", lat: 55.491568, lng: -1.592444 },
         { name: "Creswell Castle", lat: 55.233493, lng: -1.540052},
@@ -96,8 +97,8 @@ var viewModel =  {
         { name: "Alnwick Castle", lat: 55.41575, lng: -1.70607 },
         { name: "Harbottle Castle", lat: 55.337, lng: -2.109 },
         { name: "Bothal Castle", lat: 55.173, lng: -1.625 }
-    ]),
-    selectedCastle : ko.observable()
-}
+    ]);
+    self.selectedCastle = ko.observable();
+};
 
 ko.applyBindings(viewModel);
