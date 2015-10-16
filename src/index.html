@@ -19,7 +19,8 @@
                     Castle name: <select data-bind="options: castles.sort(function (l, r) { return l.name > r.name ? 1 : -1 }),
                        optionsText: 'name',
                        value: selectedCastle,
-                       optionsCaption: 'Choose the castle'"></select>
+                       optionsCaption: 'Choose the castle',
+                       event: { change: setMarkerColour}"></select>
                 </p>
             </div>
         </div>

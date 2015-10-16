@@ -99,6 +99,9 @@ var viewModel =  function() {
         { name: "Bothal Castle", lat: 55.173, lng: -1.625 }
     ]);
     self.selectedCastle = ko.observable();
+    self.setMarkerColour = function() {
+        console.log(selectedCastle());
+    }
 };
 
 ko.applyBindings(viewModel);
