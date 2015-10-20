@@ -37,3 +37,14 @@ Install Grunt (http://mattbailey.io/a-beginners-guide-to-grunt-redux/)
     * `touch grunt/sass.js`
     * `touch grunt/uglify.js` //minifies Javascript files
     * `touch grunt/watch.js` //runs specified tasks whenever watched files are changed in any way
+
+
+# Resources and Attributions
+## KO with Google Maps
+http://jsfiddle.net/stesta/p3ZT4/
+
+## Responsive Maps
+http://codepen.io/anon/pen/EVwRpP
+
+## Infobubble documentation
+https://developer.here.com/javascript-apis/documentation/v3/maps/topics_api_nlp/h-ui-infobubble.html#h-ui-infobubble__setcontent

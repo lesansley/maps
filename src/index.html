@@ -7,17 +7,34 @@
         <title>Northumberland Castle Map</title>
         <link rel="stylesheet" href="styles/style.css">
         <link rel="author" href="humans.txt">
-        <style>
-          #map {
-            width: 900px;
-            height: 600px;
-            background-color: #CCC;
-          }
-        </style>
     </head>
     <body>
-        <div id="map" data-bind="event: {resize: "></div>
-
+        <div class="container">
+            <header class="title">Northumberland Castles</header>
+            <div class="map-container">
+                <div class="map" data-bind="googlemap: { castles: castles, centerLat: 55.166667, centerLng: -2 }"></div>
+            </div>
+            <div>
+                <p>
+                    Castle name: <select class="castleSelect" data-bind="options: castles.sort(function (l, r) { return l.name > r.name ? 1 : -1 }),
+                        optionsText: 'name',
+                        value: selectedCastle,
+                        selectedIndex: index,
+                        optionsCaption: 'Choose the castle',
+                        optionLat: 'lat',
+                        optionLng: 'lng'"></select>
+                </p>
+                <div data-bind="text: index"></div>
+                <!-- To prevent an error message use the with binding -->
+                <!-- ko with: selectedCastle() -->
+                <div>Castle Name: <span data-bind="text: name"></span></div>
+                <div data-bind="text: lat"></div>
+                <div data-bind="text: lng"></div>
+                <!-- /ko -->
+                <div id="" data-bind="text: wiki"></div>
+            </div>
+            
+        </div>
     </body>
     <!--Load the Google Map API script-->
     <script src="https://maps.googleapis.com/maps/api/js"></script>
