@@ -6,8 +6,8 @@ ko.bindingHandlers.googlemap = {
             zoom: 10,
             center: new google.maps.LatLng(castleObject.centerLat, castleObject.centerLng),
             mapTypeId: google.maps.MapTypeId.ROADMAP
-        },
-        map = new google.maps.Map(element, mapOptions);
+        };
+        map = new google.maps.Map(element, mapOptions); //global variable
 
         // Call resize function
         google.maps.event.addDomListener(window, "resize", function() {
@@ -16,7 +16,7 @@ ko.bindingHandlers.googlemap = {
             map.setCenter(center);
         });
 
-        var castleSites = castleObject.castles()
+        var castleSites = castleObject.castles.sort(function (l, r) { return l.name > r.name ? 1 : -1 });
         for (castle in castleSites)
         {
             var latLng = new google.maps.LatLng(
@@ -38,7 +38,9 @@ ko.bindingHandlers.googlemap = {
                 return function() {
                     var castleName = castleSites[castle].name;
                     infobubble.open(map, marker);
-                    infobubble.setContent(castleName);
+                    infobubble.setContent(castleName + ": " + castle);
+                    console.log(castle);
+                    console.log(castleName);
                 }
             })(castle, marker));
             google.maps.event.addListener(marker, 'mouseout', (function(castle, marker) {
@@ -47,8 +49,10 @@ ko.bindingHandlers.googlemap = {
                 }
             })(castle, marker));
         }
-    }
+    },
 };
+
+
 
 var infobubble = new InfoBubble({
         maxWidth: 300
@@ -98,10 +102,31 @@ var viewModel =  function() {
         { name: "Harbottle Castle", lat: 55.337, lng: -2.109 },
         { name: "Bothal Castle", lat: 55.173, lng: -1.625 }
     ]);
+
     self.selectedCastle = ko.observable();
-    self.setMarkerColour = function() {
-        console.log(selectedCastle());
-    }
+
+    self.selectedMarker = function() {
+        var currentCastle = selectedCastle();
+
+        ko.bindingHandlers.selectedIndex = {
+            init: function(element, valueAccessor) {
+                ko.utils.registerEventHandler(element, "change", function() {
+                    var value = valueAccessor();
+                    if (ko.isWriteableObservable(value)) {
+                       value(element.selectedIndex);
+                    }
+                    console.log(value);
+                });
+            }
+        };
+
+        var latLng = new google.maps.LatLng(
+            currentCastle.lat,
+            currentCastle.lng
+        );
+        map.panTo(latLng);
+        infoWindow.open(map, gMarkers[markerIdentifier]);
+    };
 };
 
 ko.applyBindings(viewModel);
