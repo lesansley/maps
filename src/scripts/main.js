@@ -1,66 +1,5 @@
-ko.bindingHandlers.googlemap = {
-    init: function (element, valueAccessor) {
-        var
-          castleObject = valueAccessor(),
-          mapOptions = {
-            zoom: 10,
-            center: new google.maps.LatLng(castleObject.centerLat, castleObject.centerLng),
-            mapTypeId: google.maps.MapTypeId.ROADMAP
-        };
-        map = new google.maps.Map(element, mapOptions); //global variable
-
-        // Call resize function
-        google.maps.event.addDomListener(window, "resize", function() {
-            var center = map.getCenter();
-            google.maps.event.trigger(map, "resize");
-            map.setCenter(center);
-        });
-
-        var castleSites = castleObject.castles.sort(function (l, r) { return l.name > r.name ? 1 : -1 });
-        for (castle in castleSites)
-        {
-            var latLng = new google.maps.LatLng(
-                castleSites[castle].lat,
-                castleSites[castle].lng
-            );
-            var marker = new google.maps.Marker({
-                position: latLng,
-                map: map,
-                icon: 'images/castle-black15x15.png'
-            });
-            google.maps.event.addListener(marker, 'click', (function(castle, marker) {
-                return function() {
-                    console.log("A sidebar will slide open with information and images of the castle");
-                    infobubble.close(map, marker);
-                }
-            })(castle, marker));
-            google.maps.event.addListener(marker, 'mouseover', (function(castle, marker) {
-                return function() {
-                    var castleName = castleSites[castle].name;
-                    infobubble.open(map, marker);
-                    infobubble.setContent(castleName + ": " + castle);
-                    console.log(castle);
-                    console.log(castleName);
-                }
-            })(castle, marker));
-            google.maps.event.addListener(marker, 'mouseout', (function(castle, marker) {
-                return function() {
-                    infobubble.close(map, marker);
-                }
-            })(castle, marker));
-        }
-    },
-};
-
-
-
-var infobubble = new InfoBubble({
-        maxWidth: 300
-});
-
-var viewModel =  function() {
-    var self = this;
-    self.castles = ko.observableArray([
+var viewModel =  {
+    castles: ko.observableArray([
         { name: "Warkworth Castle", lat: 55.345211, lng: -1.611844 },
         { name: "Dunstaburgh Castle", lat: 55.491568, lng: -1.592444 },
         { name: "Creswell Castle", lat: 55.233493, lng: -1.540052},
@@ -101,24 +40,14 @@ var viewModel =  function() {
         { name: "Alnwick Castle", lat: 55.41575, lng: -1.70607 },
         { name: "Harbottle Castle", lat: 55.337, lng: -2.109 },
         { name: "Bothal Castle", lat: 55.173, lng: -1.625 }
-    ]);
+    ]),
 
-    self.selectedCastle = ko.observable();
-
+    selectedCastle: ko.observable(),
+    index: ko.observable(),
+    wiki: ko.observable('Les')
+/*
     self.selectedMarker = function() {
         var currentCastle = selectedCastle();
-
-        ko.bindingHandlers.selectedIndex = {
-            init: function(element, valueAccessor) {
-                ko.utils.registerEventHandler(element, "change", function() {
-                    var value = valueAccessor();
-                    if (ko.isWriteableObservable(value)) {
-                       value(element.selectedIndex);
-                    }
-                    console.log(value);
-                });
-            }
-        };
 
         var latLng = new google.maps.LatLng(
             currentCastle.lat,
@@ -126,7 +55,175 @@ var viewModel =  function() {
         );
         map.panTo(latLng);
         infoWindow.open(map, gMarkers[markerIdentifier]);
-    };
+    };*/
 };
+
+var map,
+    arrMarkers = [],
+    previousMarkerIndex = 0;
+
+
+ko.bindingHandlers.googlemap = {
+    init: function (element, valueAccessor) {
+        var
+          castleObject = valueAccessor(),
+          mapOptions = {
+            zoom: 10,
+            center: new google.maps.LatLng(castleObject.centerLat, castleObject.centerLng),
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+        map = new google.maps.Map(element, mapOptions); //global variable
+
+        // Call resize function
+        google.maps.event.addDomListener(window, "resize", function() {
+            var center = map.getCenter();
+            google.maps.event.trigger(map, "resize");
+            map.setCenter(center);
+        });
+
+        var castleSites = castleObject.castles.sort(function (l, r) { return l.name > r.name ? 1 : -1 });
+        for (castle in castleSites)
+        {
+            var latLng = new google.maps.LatLng(
+                castleSites[castle].lat,
+                castleSites[castle].lng
+            );
+            marker = new google.maps.Marker({
+                position: latLng,
+                map: map,
+                icon: 'images/castle-black15x15.png',
+                id: castle
+            });
+            
+            google.maps.event.addListener(marker, 'click', (function(marker) {
+                return function() {
+                    var pos = marker.getPosition();
+                    var index = marker.id;
+                    // Close all info bubble windows
+                    infobubble.close(map, marker);
+                    //markerClick(index, pos);
+                    index++;
+                    $('.castleSelect').prop('selectedIndex', index);
+                    $('.castleSelect').trigger('change');
+                }
+            })(marker));
+
+            google.maps.event.addListener(marker, 'mouseover', (function(castle, marker) {
+                return function() {
+                    var castleName = castleSites[castle].name;
+                    markerMouseOver(castleName, castle, marker);
+                    loadWiki(castleName);
+                    viewModel.wiki(castleName);
+                    console.log(viewModel.wiki);
+                }
+            })(castle, marker));
+
+            google.maps.event.addListener(marker, 'mouseout', (function(marker) {
+                return function(castleName) {
+                    markerMouseOut(marker); 
+                }
+            })(marker));
+            arrMarkers.push(marker);
+        }
+    }
+};
+
+function wiki() {
+
+}
+
+var loadWiki = function(castle) {
+
+        var query = castle.replace(/ /g,'%20');
+        console.log(query);
+        var wikiRequestTimeout = setTimeout(function() {
+            viewModel.wiki("Wikipedia articles could not be loaded");
+        }, 8000);
+
+        $.ajax({
+            url: 'https://en.wikipedia.org/w/api.php',
+            data: { action: 'opensearch', search: castle, format: 'json', redirects: 'resolve'},
+            dataType: 'jsonp',
+            success : function(e) {
+                console.log(e);
+                //viewModel.wiki(content);
+                clearTimeout(wikiRequestTimeout);
+            }
+            /*
+            success: function (e) {
+                var wikiArticles = addWikiArticles(e[1], e[3]);
+                $wikiElem.append(wikiArticles);
+                clearTimeout(wikiRequestTimeout);
+            }
+            */
+        });
+    };
+
+function addWikiArticles(title, url) {
+    var HTMLwikiArticle = '<li><a href=%url% target="_blank"><h3 class="head-line">%header%</h3></a></li>';
+    var allArticles = '';
+    
+    for(var entry in title) {
+        var wikiEntry = HTMLwikiArticle.replace('%header%', title[entry]);
+        wikiEntry = wikiEntry.replace('%url%',url[entry]);
+        allArticles += wikiEntry;
+    }
+    return allArticles;
+}
+
+function markerClick(index, latLng) {
+    arrMarkers[previousMarkerIndex].setIcon('images/castle-black15x15.png')
+    console.log("A sidebar will slide open with information and images of the castle");
+    centerMap(latLng);
+    arrMarkers[index].setIcon('images/castle-red15x15.png');
+    previousMarkerIndex = index;
+    //focusMarker(latLng);
+}
+
+function markerMouseOver(castleName, castleIndex, marker) {
+    infobubble.open(map, marker);
+    infobubble.setContent(castleName + ": " + castleIndex);
+}
+
+function markerMouseOut() {
+    infobubble.close(map, marker);
+}
+
+function centerMap(pos) {
+    map.panTo(pos);
+}
+
+function focusMarker(pos) {
+    marker = new google.maps.Marker({
+        position: pos,
+        map: map,
+        icon: 'images/castle-red15x15.png',
+        zIndex: 999
+    });
+    marker.icon ='images/castle-black15x15.png';
+}
+
+// Obtain the index of the selected item. Offset by one.
+ko.bindingHandlers.selectedIndex = {
+    init: function(element, valueAccessor, allBindings) {
+        ko.utils.registerEventHandler(element, "change", function() {
+            var value = valueAccessor();
+            if (ko.isWriteableObservable(value) && element.selectedIndex != 0)   {
+                var index = element.selectedIndex - 1,
+                    selectedCastle = allBindings().options[index],
+                    selectedCastleName = allBindings().options[index].name,
+                    selectedLat = selectedCastle.lat,
+                    selectedLng = selectedCastle.lng,
+                    latLng = new google.maps.LatLng(selectedLat, selectedLng);
+                centerMap(latLng);
+                markerClick(index, latLng);
+            }
+        });
+    }
+};
+
+var infobubble = new InfoBubble({
+        maxWidth: 300
+});
 
 ko.applyBindings(viewModel);

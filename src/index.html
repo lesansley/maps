@@ -16,13 +16,24 @@
             </div>
             <div>
                 <p>
-                    Castle name: <select data-bind="options: castles.sort(function (l, r) { return l.name > r.name ? 1 : -1 }),
-                       optionsText: 'name',
-                       value: selectedCastle,
-                       optionsCaption: 'Choose the castle',
-                       event: { change: selectedMarker}"></select>
+                    Castle name: <select class="castleSelect" data-bind="options: castles.sort(function (l, r) { return l.name > r.name ? 1 : -1 }),
+                        optionsText: 'name',
+                        value: selectedCastle,
+                        selectedIndex: index,
+                        optionsCaption: 'Choose the castle',
+                        optionLat: 'lat',
+                        optionLng: 'lng'"></select>
                 </p>
+                <div data-bind="text: index"></div>
+                <!-- To prevent an error message use the with binding -->
+                <!-- ko with: selectedCastle() -->
+                <div>Castle Name: <span data-bind="text: name"></span></div>
+                <div data-bind="text: lat"></div>
+                <div data-bind="text: lng"></div>
+                <!-- /ko -->
+                <div id="" data-bind="text: wiki"></div>
             </div>
+            
         </div>
     </body>
     <!--Load the Google Map API script-->
