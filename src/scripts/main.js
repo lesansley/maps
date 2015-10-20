@@ -44,18 +44,7 @@ var viewModel =  {
 
     selectedCastle: ko.observable(),
     index: ko.observable(),
-    wiki: ko.observable('Les')
-/*
-    self.selectedMarker = function() {
-        var currentCastle = selectedCastle();
-
-        var latLng = new google.maps.LatLng(
-            currentCastle.lat,
-            currentCastle.lng
-        );
-        map.panTo(latLng);
-        infoWindow.open(map, gMarkers[markerIdentifier]);
-    };*/
+    wiki: ko.observable()
 };
 
 var map,
@@ -111,9 +100,9 @@ ko.bindingHandlers.googlemap = {
             google.maps.event.addListener(marker, 'mouseover', (function(castle, marker) {
                 return function() {
                     var castleName = castleSites[castle].name;
+                    viewModel.wiki(castleName);
                     markerMouseOver(castleName, castle, marker);
                     loadWiki(castleName);
-                    viewModel.wiki(castleName);
                     console.log(viewModel.wiki);
                 }
             })(castle, marker));
@@ -182,7 +171,8 @@ function markerClick(index, latLng) {
 
 function markerMouseOver(castleName, castleIndex, marker) {
     infobubble.open(map, marker);
-    infobubble.setContent(castleName + ": " + castleIndex);
+    console.log(viewModel.wiki());
+    infobubble.setContent(viewModel.wiki());
 }
 
 function markerMouseOut() {
