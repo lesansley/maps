@@ -5,6 +5,8 @@
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Northumberland Castle Map</title>
+        <link rel="stylesheet" href="styles/jquery-ui.min.css">
+        <link rel="stylesheet" href="styles/jquery-ui.structure.min.css">
         <link rel="stylesheet" href="styles/style.css">
         <link rel="author" href="humans.txt">
     </head>
@@ -14,6 +16,14 @@
             <div class="map-container">
                 <div class="map" data-bind="googlemap: { castles: castles, centerLat: 55.166667, centerLng: -2 }"></div>
             </div>
+
+            <div>
+                <input type="text" data-bind="autoComplete: { selected: selectedOption, options: options }" />
+                <!-- Debugging -->
+                
+            </div>
+            
+
             <div>
                 <p>
                     Castle name: <select class="castleSelect" data-bind="options: castles.sort(function (l, r) { return l.name > r.name ? 1 : -1 }),
@@ -33,10 +43,7 @@
                 <!-- /ko -->
 
                 <div data-bind:"if: wiki()[1][0]">
-                    <div id="" data-bind="text: wiki()[0]"></div>
-                    <div id="" data-bind="text: wiki()[1][0]"></div>
-                    <div id="" data-bind="text: wiki()[2][0]"></div>
-                    <div id="" data-bind="text: wiki()[3][0]"></div>
+                    <div id="" data-bind="text: wiki()"</div>
                 </div>
             </div>
 
@@ -47,5 +54,6 @@
     <script src="scripts/infobubble.js"></script>
     <script src="scripts/jquery.js"></script>
     <script src="scripts/knockout.js"></script>
+    <script src="scripts/jquery-ui.min.js"></script>
     <script src="scripts/main.js"></script>
 </html>
