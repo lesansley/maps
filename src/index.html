@@ -31,9 +31,15 @@
                 <div data-bind="text: lat"></div>
                 <div data-bind="text: lng"></div>
                 <!-- /ko -->
-                <div id="" data-bind="text: wiki"></div>
+
+                <div data-bind:"if: wiki()[1][0]">
+                    <div id="" data-bind="text: wiki()[0]"></div>
+                    <div id="" data-bind="text: wiki()[1][0]"></div>
+                    <div id="" data-bind="text: wiki()[2][0]"></div>
+                    <div id="" data-bind="text: wiki()[3][0]"></div>
+                </div>
             </div>
-            
+
         </div>
     </body>
     <!--Load the Google Map API script-->

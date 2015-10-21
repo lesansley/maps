@@ -44,7 +44,7 @@ var viewModel =  {
 
     selectedCastle: ko.observable(),
     index: ko.observable(),
-    wiki: ko.observable()
+    wiki: ko.observableArray(["","","",""])
 };
 
 var map,
@@ -83,14 +83,13 @@ ko.bindingHandlers.googlemap = {
                 icon: 'images/castle-black15x15.png',
                 id: castle
             });
-            
+
             google.maps.event.addListener(marker, 'click', (function(marker) {
                 return function() {
                     var pos = marker.getPosition();
                     var index = marker.id;
                     // Close all info bubble windows
                     infobubble.close(map, marker);
-                    //markerClick(index, pos);
                     index++;
                     $('.castleSelect').prop('selectedIndex', index);
                     $('.castleSelect').trigger('change');
@@ -100,16 +99,14 @@ ko.bindingHandlers.googlemap = {
             google.maps.event.addListener(marker, 'mouseover', (function(castle, marker) {
                 return function() {
                     var castleName = castleSites[castle].name;
-                    viewModel.wiki(castleName);
-                    markerMouseOver(castleName, castle, marker);
-                    loadWiki(castleName);
-                    console.log(viewModel.wiki);
+                    //viewModel.wiki(castleName);
+                    loadWiki(castleName, marker);
                 }
             })(castle, marker));
 
             google.maps.event.addListener(marker, 'mouseout', (function(marker) {
                 return function(castleName) {
-                    markerMouseOut(marker); 
+                    markerMouseOut(marker);
                 }
             })(marker));
             arrMarkers.push(marker);
@@ -121,10 +118,9 @@ function wiki() {
 
 }
 
-var loadWiki = function(castle) {
+var loadWiki = function(castle, marker) {
 
         var query = castle.replace(/ /g,'%20');
-        console.log(query);
         var wikiRequestTimeout = setTimeout(function() {
             viewModel.wiki("Wikipedia articles could not be loaded");
         }, 8000);
@@ -134,24 +130,19 @@ var loadWiki = function(castle) {
             data: { action: 'opensearch', search: castle, format: 'json', redirects: 'resolve'},
             dataType: 'jsonp',
             success : function(e) {
-                console.log(e);
-                //viewModel.wiki(content);
+                viewModel.wiki(e);
+                console.log(viewModel.wiki());
+                console.log(viewModel.wiki()[2][0]);
+                markerMouseOver(marker);
                 clearTimeout(wikiRequestTimeout);
             }
-            /*
-            success: function (e) {
-                var wikiArticles = addWikiArticles(e[1], e[3]);
-                $wikiElem.append(wikiArticles);
-                clearTimeout(wikiRequestTimeout);
-            }
-            */
         });
     };
 
 function addWikiArticles(title, url) {
     var HTMLwikiArticle = '<li><a href=%url% target="_blank"><h3 class="head-line">%header%</h3></a></li>';
     var allArticles = '';
-    
+
     for(var entry in title) {
         var wikiEntry = HTMLwikiArticle.replace('%header%', title[entry]);
         wikiEntry = wikiEntry.replace('%url%',url[entry]);
@@ -169,10 +160,10 @@ function markerClick(index, latLng) {
     //focusMarker(latLng);
 }
 
-function markerMouseOver(castleName, castleIndex, marker) {
+function markerMouseOver(marker) {
     infobubble.open(map, marker);
-    console.log(viewModel.wiki());
-    infobubble.setContent(viewModel.wiki());
+    console.log(getVisibility(infoBubble));
+    infobubble.setContent(viewModel.wiki()[1][0] + ' ' + viewModel.wiki()[2][0]);
 }
 
 function markerMouseOut() {
