@@ -4,25 +4,20 @@
         <meta charset="utf-8">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Northumberland Castle Map</title>
+        <title>A map of Northumberland Castles</title>
         <link rel="stylesheet" href="styles/jquery-ui.min.css">
         <link rel="stylesheet" href="styles/jquery-ui.structure.min.css">
         <link rel="stylesheet" href="styles/style.css">
-        <link rel="author" href="humans.txt">
     </head>
     <body>
         <div class="container">
             <header class="title">Northumberland Castles</header>
+            <div class="row search-container">
+                <input id="search-box" type="text" placeholder="Start typing the name of a castle" class="" data-bind="autoComplete: { selected: selectedOption, options: options }" />
+            </div>
             <div class="map-container">
                 <div class="map" data-bind="googlemap: { castles: castles, centerLat: 55.166667, centerLng: -2 }"></div>
             </div>
-
-            <div>
-                <input type="text" data-bind="autoComplete: { selected: selectedOption, options: options }" />
-                <!-- Debugging -->
-                
-            </div>
-            
 
             <div>
                 <p>
@@ -41,12 +36,10 @@
                 <div data-bind="text: lat"></div>
                 <div data-bind="text: lng"></div>
                 <!-- /ko -->
-
-                <div data-bind:"if: wiki()[1][0]">
-                    <div id="" data-bind="text: wiki()"</div>
-                </div>
-            </div>
-
+                <!-- ko with: selectedOption() -->
+                <div><span data-bind="text: selectedOption().object.name"></span></div>
+                <!-- /ko -->
+            <div>
         </div>
     </body>
     <!--Load the Google Map API script-->

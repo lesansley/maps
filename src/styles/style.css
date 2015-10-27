@@ -1,3 +1,7 @@
+/* {
+  border: 1px solid red !important;
+}*/
+
 /* latin */
 @font-face {
   font-family: 'UnifrakturMaguntia';
@@ -25,10 +29,70 @@
     font-size: 9vw;
 }
 
-.map_container{
+.map_container {
     position: relative;
     padding-left: 10%;
     padding-right: 10%;
+}
+
+.row {
+    width: 100%;
+}
+
+/* ============================================================
+  INPUT BOX STYLING
+============================================================ */
+
+.search-container {
+    margin-right: 20px;
+    margin-left: 20px;
+    height: 70px;
+}
+
+#search-box {
+    padding: 2%;
+    border: solid 1px gainsboro;
+    -webkit-transition: box-shadow 0.3s, border 0.3s;
+    -moz-transition: box-shadow 0.3s, border 0.3s;
+    -o-transition: box-shadow 0.3s, border 0.3s;
+    transition: box-shadow 0.3s, border 0.3s;
+    display: block;
+    margin: 0;
+    width: 100%;
+    font-family: "Open Sans", sans-serif;
+    font-size: 18px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+    -webkit-border-radius: none;
+    -moz-border-radius: none;
+    -ms-border-radius: none;
+    -o-border-radius: none;
+    border-radius: none;
+    float: right;
+    width: 50%;
+    margin-bottom: 3px;
+    margin-right: 5%;
+    font-size: 2.6vw;
+    text-align: right;
+}
+
+#search-box:focus,
+#search-box.focus {
+    -webkit-box-shadow: 0 0 5px 1px #969696;
+    -moz-box-shadow: 0 0 5px 1px #969696;
+    box-shadow: 0 0 5px 1px #969696;
+    outline: none;
+}
+
+@media only screen and (max-width:800px) {
+    #search-box {
+        max-width: 100%;
+        margin-left: 20%;
+    }
 }
 
 @media only screen and (max-width:450px) {

@@ -45,17 +45,17 @@ function viewModel()  {
     var self = this;
 
     self.castles = castleList.sort(function (l, r) { return l.name > r.name ? 1 : -1 });
-    console.log(self.castles);
     self.selectedCastle = ko.observable();
     self.index = ko.observable();
     self.wiki = ko.observable();
     self.selectedOption = ko.observable();
+    self.previousSelect = ko.observable(0);
     self.options = self.castles.map(function(element) {
         // JQuery.UI.AutoComplete expects label & value properties, but we can add our own
         return {
             label: element.name,
             value: element.name,
-            // This way we still have acess to the original object
+            // This way we still have access to the original object
             object: element
         };
     });
@@ -65,14 +65,13 @@ var map,
     arrMarkers = [],
     previousMarkerIndex = 0;
 
-
 ko.bindingHandlers.googlemap = {
     init: function (element, valueAccessor) {
         var
           castleObject = valueAccessor(),
           mapOptions = {
             zoom: 10,
-            center: new google.maps.LatLng(castleObject.centerLat, castleObject.centerLng),
+            center: convertToLatLng(castleObject.centerLat, castleObject.centerLng),
             mapTypeId: google.maps.MapTypeId.ROADMAP
         };
         map = new google.maps.Map(element, mapOptions); //global variable
@@ -87,7 +86,7 @@ ko.bindingHandlers.googlemap = {
         var castleSites = castleObject.castles.sort(function (l, r) { return l.name > r.name ? 1 : -1 });
         for (castle in castleSites)
         {
-            var latLng = new google.maps.LatLng(
+            var latLng = convertToLatLng(
                 castleSites[castle].lat,
                 castleSites[castle].lng
             );
@@ -103,8 +102,8 @@ ko.bindingHandlers.googlemap = {
                 return function() {
                     var pos = marker.getPosition();
                     var index = marker.id;
-                    // Close all info bubble windows
                     infobubble.close(map, marker);
+                    // updates select box
                     index++;
                     $('.castleSelect').prop('selectedIndex', index);
                     $('.castleSelect').trigger('change');
@@ -141,8 +140,11 @@ ko.bindingHandlers.autoComplete = {
             // Stop the default behavior
             event.preventDefault();
 
-            // Update the value of the html element with the label 
+            // Update the value of the html element with the label
             // of the activated option in the list (ui.item)
+            if(ui.item === null) {
+                ui.item = '';
+            }
             $(element).val(ui.item.label);
 
             // Update our SelectedOption observable
@@ -157,17 +159,49 @@ ko.bindingHandlers.autoComplete = {
             delay: 0,
             select: function (event, ui) {
                 updateElementValueWithLabel(event, ui);
-                console.log(self.selectedOption().object);
+                console.log(self.selectedOption());
+                selectedLat = self.selectedOption().object.lat;
+                selectedLng = self.selectedOption().object.lng;
+                selectedLatLng = convertToLatLng(selectedLat, selectedLng);
+                index = getIndex(self.selectedOption().object);
+                console.log('Select Event');
             },
             focus: function (event, ui) {
                 updateElementValueWithLabel(event, ui);
+                console.log('Focus Event');
             },
             change: function (event, ui) {
                 updateElementValueWithLabel(event, ui);
+                console.log('Change Event');
             },
         });
     }
 };
+
+
+
+// Obtain the index of the selected item. Offset by one.
+ko.bindingHandlers.selectedIndex = {
+    init: function(element, valueAccessor, allBindings) {
+        ko.utils.registerEventHandler(element, "change", function() {
+            var value = valueAccessor();
+            if (ko.isWriteableObservable(value) && element.selectedIndex != 0)   {
+                var index = element.selectedIndex - 1,
+                    selectedCastle = allBindings().options[index],
+                    selectedCastleName = allBindings().options[index].name,
+                    selectedLat = selectedCastle.lat,
+                    selectedLng = selectedCastle.lng,
+                    latLng = convertToLatLng(selectedLat, selectedLng);
+                centerMap(latLng);
+                markerSelect(index, latLng);
+            }
+        });
+    }
+};
+
+function convertToLatLng(lat, lng) {
+    return new google.maps.LatLng(lat, lng);
+}
 
 var loadWiki = function(castle, marker) {
 
@@ -185,7 +219,7 @@ var loadWiki = function(castle, marker) {
                 content = e[2][0],
                 link = e[3][0];
             var wikiContent = formatWikiArticle(title, content, link);
-            self.wiki(wikiContent);    
+            self.wiki(wikiContent);
             markerMouseOver(marker);
             clearTimeout(wikiRequestTimeout);
         }
@@ -200,13 +234,15 @@ function formatWikiArticle(title, description, url) {
     return wikiEntry;
 }
 
-function markerClick(index, latLng) {
+function getIndex(object) {
+
+}
+
+function markerSelect(index, latLng) {
     arrMarkers[previousMarkerIndex].setIcon('images/castle-black15x15.png')
-    console.log("A sidebar will slide open with information and images of the castle");
     centerMap(latLng);
     arrMarkers[index].setIcon('images/castle-red15x15.png');
     previousMarkerIndex = index;
-    //focusMarker(latLng);
 }
 
 function markerMouseOver(marker) {
@@ -232,25 +268,6 @@ function focusMarker(pos) {
     });
     marker.icon ='images/castle-black15x15.png';
 }
-
-// Obtain the index of the selected item. Offset by one.
-ko.bindingHandlers.selectedIndex = {
-    init: function(element, valueAccessor, allBindings) {
-        ko.utils.registerEventHandler(element, "change", function() {
-            var value = valueAccessor();
-            if (ko.isWriteableObservable(value) && element.selectedIndex != 0)   {
-                var index = element.selectedIndex - 1,
-                    selectedCastle = allBindings().options[index],
-                    selectedCastleName = allBindings().options[index].name,
-                    selectedLat = selectedCastle.lat,
-                    selectedLng = selectedCastle.lng,
-                    latLng = new google.maps.LatLng(selectedLat, selectedLng);
-                centerMap(latLng);
-                markerClick(index, latLng);
-            }
-        });
-    }
-};
 
 var infobubble = new InfoBubble({
         maxWidth: 300,
