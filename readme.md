@@ -1,4 +1,11 @@
-#Setup
+#Neighbourhood Map Project
+I have developed a single-page application featuring a map of Northumberland county in the UK. I have added map markers to identify castles and a search function to easily lookup the castles. I have implemented third-party APIs from Wikipeadia and Flickr to provide additional information and images about each of these locations.
+
+Hovering over a marker will identiy the castle and provide a summary from Wikipedia along with a link to the full article. Clicking on a marker will centre the map on teh slected castle, chane the icon colour from black to red and up to six Flickr images of the castle and surrounding areas will be displayed below the map.
+
+
+
+##Installed Packages
 
 * `bower install knockout`
 * `bower install jquery`
