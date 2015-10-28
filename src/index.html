@@ -13,33 +13,38 @@
         <div class="container">
             <header class="title">Northumberland Castles</header>
             <div class="row search-container">
-                <input id="search-box" type="text" placeholder="Start typing the name of a castle" class="" data-bind="autoComplete: { selected: selectedOption, options: options }" />
+                <input id="search-box" type="text" placeholder="Start typing the name of a castle" class="" data-bind="autoComplete: { selected: selectedCastle, options: options }" />
             </div>
             <div class="map-container">
                 <div class="map" data-bind="googlemap: { castles: castles, centerLat: 55.166667, centerLng: -2 }"></div>
-            </div>
-
-            <div>
-                <p>
-                    Castle name: <select class="castleSelect" data-bind="options: castles.sort(function (l, r) { return l.name > r.name ? 1 : -1 }),
-                        optionsText: 'name',
-                        value: selectedCastle,
-                        selectedIndex: index,
-                        optionsCaption: 'Choose the castle',
-                        optionLat: 'lat',
-                        optionLng: 'lng'"></select>
-                </p>
-                <div data-bind="text: index"></div>
-                <!-- To prevent an error message use the with binding -->
+            <div class="castle-img-wrapper">
                 <!-- ko with: selectedCastle() -->
-                <div>Castle Name: <span data-bind="text: name"></span></div>
-                <div data-bind="text: lat"></div>
-                <div data-bind="text: lng"></div>
-                <!-- /ko -->
-                <!-- ko with: selectedOption() -->
-                <div><span data-bind="text: selectedOption().object.name"></span></div>
-                <!-- /ko -->
-            <div>
+                    <div class="castle-img-title"><span  data-bind="text: selectedCastle().name"></span></div>
+                    <!-- /ko -->
+                    <div class="row">
+                        <!-- ko with: flickr()[0] -->
+                        <img class="col-4 img-responsive" data-bind="attr:{src: flickr()[0]}">
+                        <!-- /ko -->
+                        <!-- ko with: flickr()[1] -->
+                        <img class="col-4 img-responsive" data-bind="attr:{src: flickr()[1]}">
+                        <!-- /ko -->
+                        <!-- ko with: flickr()[2] -->
+                        <img class="col-4 img-responsive" data-bind="attr:{src: flickr()[2]}">
+                        <!-- /ko -->
+                    </div>
+                    <div class="row">
+                        <!-- ko with: flickr()[3] -->
+                        <img class="col-4 img-responsive" data-bind="attr:{src: flickr()[3]}">
+                        <!-- /ko -->
+                        <!-- ko with: flickr()[4] -->
+                        <img class="col-4 img-responsive" data-bind="attr:{src: flickr()[4]}">
+                        <!-- /ko -->
+                        <!-- ko with: flickr()[5] -->
+                        <img class="col-4 img-responsive" data-bind="attr:{src: flickr()[5]}">
+                        <!-- /ko -->
+                    </div> 
+                </div>
+            </div>
         </div>
     </body>
     <!--Load the Google Map API script-->

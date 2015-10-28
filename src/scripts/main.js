@@ -45,11 +45,10 @@ function viewModel()  {
     var self = this;
 
     self.castles = castleList.sort(function (l, r) { return l.name > r.name ? 1 : -1 });
-    self.selectedCastle = ko.observable();
     self.index = ko.observable();
     self.wiki = ko.observable();
-    self.selectedOption = ko.observable();
-    self.previousSelect = ko.observable(0);
+    self.flickr = ko.observableArray();
+    self.selectedCastle = ko.observable();
     self.options = self.castles.map(function(element) {
         // JQuery.UI.AutoComplete expects label & value properties, but we can add our own
         return {
@@ -100,13 +99,14 @@ ko.bindingHandlers.googlemap = {
             // Add event listeners for the markers
             google.maps.event.addListener(marker, 'click', (function(marker) {
                 return function() {
-                    var pos = marker.getPosition();
-                    var index = marker.id;
+                    var index = marker.id,
+                        markerLat = marker.position.lat(),
+                        markerLng = marker.position.lng(),
+                        castle = self.castles[index];
+
+                    assignSelectedCastle(castle);
                     infobubble.close(map, marker);
-                    // updates select box
-                    index++;
-                    $('.castleSelect').prop('selectedIndex', index);
-                    $('.castleSelect').trigger('change');
+                    markerSelect(index, castle.name, markerLat, markerLng);
                 }
             })(marker));
 
@@ -130,11 +130,11 @@ ko.bindingHandlers.googlemap = {
 ko.bindingHandlers.autoComplete = {
     // Only using init event because the Jquery.UI.AutoComplete widget will take care of the update callbacks
     init: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
-        // valueAccessor = { selected: mySelectedOptionObservable, options: myArrayOfLabelValuePairs }
+        // valueAccessor = { selected: myselectedCastleObservable, options: myArrayOfLabelValuePairs }
         var settings = valueAccessor();
 
-        var selectedOption = settings.selected;
-        var options = settings.options;
+        self.selectedCastle = settings.selected;
+        self.options = settings.options;
 
         var updateElementValueWithLabel = function (event, ui) {
             // Stop the default behavior
@@ -147,10 +147,10 @@ ko.bindingHandlers.autoComplete = {
             }
             $(element).val(ui.item.label);
 
-            // Update our SelectedOption observable
+            // Update our selectedCastle observable
             if(typeof ui.item !== "undefined") {
                 // ui.item - id|label|...
-                selectedOption(ui.item);
+                assignSelectedCastle(ui.item.object)
             }
         };
 
@@ -159,52 +159,84 @@ ko.bindingHandlers.autoComplete = {
             delay: 0,
             select: function (event, ui) {
                 updateElementValueWithLabel(event, ui);
-                console.log(self.selectedOption());
-                selectedLat = self.selectedOption().object.lat;
-                selectedLng = self.selectedOption().object.lng;
-                selectedLatLng = convertToLatLng(selectedLat, selectedLng);
-                index = getIndex(self.selectedOption().object);
-                console.log('Select Event');
+                var selectedLat = self.selectedCastle().lat,
+                    selectedLng = self.selectedCastle().lng,
+                    selectedName = self.selectedCastle().name,
+                    selectedIndex = findIndex(self.castles, selectedName);
+                markerSelect(selectedIndex, selectedName, selectedLat, selectedLng);
             },
             focus: function (event, ui) {
                 updateElementValueWithLabel(event, ui);
-                console.log('Focus Event');
             },
             change: function (event, ui) {
                 updateElementValueWithLabel(event, ui);
-                console.log('Change Event');
             },
         });
     }
 };
 
+function assignSelectedCastle(object) {
+    self.selectedCastle(object);
+}
 
+//Finds the index of teh object in the array
+function findIndex(array, comparator) {
+    indexes = $.map(array, function(castle, index) {
+        if(castle.name == comparator) {
+            return index;
+        }
+    })
+    return indexes;
+}
 
-// Obtain the index of the selected item. Offset by one.
-ko.bindingHandlers.selectedIndex = {
-    init: function(element, valueAccessor, allBindings) {
-        ko.utils.registerEventHandler(element, "change", function() {
-            var value = valueAccessor();
-            if (ko.isWriteableObservable(value) && element.selectedIndex != 0)   {
-                var index = element.selectedIndex - 1,
-                    selectedCastle = allBindings().options[index],
-                    selectedCastleName = allBindings().options[index].name,
-                    selectedLat = selectedCastle.lat,
-                    selectedLng = selectedCastle.lng,
-                    latLng = convertToLatLng(selectedLat, selectedLng);
-                centerMap(latLng);
-                markerSelect(index, latLng);
-            }
-        });
-    }
-};
-
+//Converts lat & long to LatLng for Google maps
 function convertToLatLng(lat, lng) {
     return new google.maps.LatLng(lat, lng);
 }
 
-var loadWiki = function(castle, marker) {
+var loadFlickr = function(imgTag, imgLat, imgLng) {
+    var query = imgTag.replace(/ /g,'+');
+    var flickrRequestTimeout = setTimeout(function() {
+        alert("Flickr images could not be loaded");
+    }, 8000);
 
+    $.ajax({
+        url: 'https://api.flickr.com/services/rest/',
+        data: {
+            method: 'flickr.photos.search',
+            api_key: 'c5d5dfb581a7a72e8afd495ac82b1cde',
+            tags: query,
+            lat: imgLat,
+            lon: imgLng,
+            accuracy: 16,
+            safe_search: 1,
+            content_type: 1,
+            radius: 2,
+            per_page: 6,
+            format:'json'},
+        dataType: 'jsonp',
+        success: clearTimeout(flickrRequestTimeout)
+    });
+};
+
+function jsonFlickrApi (response) {
+    console.log(
+        "Got response from Flickr-API with the following photos: %o", 
+        response.photos
+    );
+    var photoset = response.photos.photo
+    var i = 0;
+    self.flickr.removeAll();
+    console.log(self.flickr());
+    for(image in photoset) {
+        var photoURL = 'http://farm' + photoset[image].farm + '.static.flickr.com/' + photoset[image].server + '/' + photoset[image].id + '_' + photoset[image].secret + '.jpg';
+        self.flickr.push(photoURL);
+        console.log(self.flickr());
+    }
+    console.log(self.flickr()[0]);
+}
+
+var loadWiki = function(castle, marker) {
     var query = castle.replace(/ /g,'%20');
     var wikiRequestTimeout = setTimeout(function() {
         self.wiki("Wikipedia articles could not be loaded");
@@ -234,14 +266,13 @@ function formatWikiArticle(title, description, url) {
     return wikiEntry;
 }
 
-function getIndex(object) {
-
-}
-
-function markerSelect(index, latLng) {
-    arrMarkers[previousMarkerIndex].setIcon('images/castle-black15x15.png')
+function markerSelect(index, name, lat, lng) {
+    var latLng = convertToLatLng(lat, lng);
     centerMap(latLng);
+    arrMarkers[previousMarkerIndex].setIcon('images/castle-black15x15.png');
     arrMarkers[index].setIcon('images/castle-red15x15.png');
+    loadFlickr(name, lat, lng);
+    console.log("done");
     previousMarkerIndex = index;
 }
 
