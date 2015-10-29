@@ -12,11 +12,28 @@
 }
 
 .container {
+    margin-right: auto;
+    margin-left: auto;
     max-width: 1700px;
+    min-width: 340px;
 }
 
 .img-responsive {
-    width: 100%;
+    max-width: 100%;
+    height: auto;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+figure {
+    margin: 0;
 }
 
 .castle-img-wrapper {
@@ -51,6 +68,14 @@
     padding-bottom: 1%;
 }
 
+.castle-img-wrapper {
+    text-align: left;
+    font-family: UnifrakturMaguntia;
+    font-size: 4vw;
+    padding-top: 1%;
+    padding-bottom: 1%;
+}
+
 .map_container {
     position: relative;
     padding-left: 10%;
@@ -58,7 +83,7 @@
 }
 
 .row {
-    width: 100%;
+    max-width: 100%;
     display: -webkit-flex;
     display: -moz-flex;
     display: -ms-flex;
@@ -66,29 +91,20 @@
     flex-wrap: wrap;
 }
 
-/* ============================================================
-  INPUT BOX STYLING
-============================================================ */
-
 .search-container {
     margin-right: 5%;
-    margin-left: 0;
-    
+    margin-left: 5%;
 }
 
 #search-box {
     max-height: 30px;
-    padding: 2%;
     border: solid 1px gainsboro;
     -webkit-transition: box-shadow 0.3s, border 0.3s;
     -moz-transition: box-shadow 0.3s, border 0.3s;
     -o-transition: box-shadow 0.3s, border 0.3s;
     transition: box-shadow 0.3s, border 0.3s;
     display: block;
-    margin: 0;
-    width: 100%;
     font-family: "Open Sans", sans-serif;
-    font-size: 18px;
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
@@ -100,10 +116,10 @@
     -ms-border-radius: none;
     -o-border-radius: none;
     border-radius: none;
-    float: right;
     width: 50%;
+    margin: 0;
     margin-bottom: 3px;
-    margin-right: 5%;
+    padding: 2%;
     font-size: 2.6vw;
     text-align: right;
 }
@@ -116,10 +132,17 @@
     outline: none;
 }
 
+.col-3 {
+    width: 25%;
+}
+
+.col-4 {
+    width: 33.33%;
+}
+
 @media only screen and (max-width:800px) {
     #search-box {
         max-width: 100%;
-        margin-left: 20%;
     }
 }
 
@@ -149,12 +172,26 @@
         width: 100%;
     }
 
+    .search-container {
+        margin-right: 0;
+        margin-left: 0;
+    }
+
+    #search-box {
+        max-width: 100%;
+    }
+
     .body {
         margin-right: 0;
         margin-left: 0;
     }
+
+    .mobile-invisible {
+        display: none;
+    }
+
+    .col-sm-12 {
+        width: 100%;
+    }
 }
 
-.col-4 {
-    width: 33.33%;
-}

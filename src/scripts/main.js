@@ -103,10 +103,10 @@ ko.bindingHandlers.googlemap = {
                         markerLat = marker.position.lat(),
                         markerLng = marker.position.lng(),
                         castle = self.castles[index];
-
                     assignSelectedCastle(castle);
                     infobubble.close(map, marker);
                     markerSelect(index, castle.name, markerLat, markerLng);
+                    //$('.')
                 }
             })(marker));
 
@@ -132,7 +132,7 @@ ko.bindingHandlers.autoComplete = {
     init: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
         // valueAccessor = { selected: myselectedCastleObservable, options: myArrayOfLabelValuePairs }
         var settings = valueAccessor();
-
+        console.log(element);
         self.selectedCastle = settings.selected;
         self.options = settings.options;
 
@@ -179,7 +179,7 @@ function assignSelectedCastle(object) {
     self.selectedCastle(object);
 }
 
-//Finds the index of teh object in the array
+//Finds the index of the object in the array
 function findIndex(array, comparator) {
     indexes = $.map(array, function(castle, index) {
         if(castle.name == comparator) {
@@ -197,13 +197,14 @@ function convertToLatLng(lat, lng) {
 var loadFlickr = function(imgTag, imgLat, imgLng) {
     var query = imgTag.replace(/ /g,'+');
     var flickrRequestTimeout = setTimeout(function() {
-        alert("Flickr images could not be loaded");
+        alert("Flickr images could not be loaded at this time");
     }, 8000);
 
     $.ajax({
         url: 'https://api.flickr.com/services/rest/',
         data: {
             method: 'flickr.photos.search',
+            crossDomain: true,
             api_key: 'c5d5dfb581a7a72e8afd495ac82b1cde',
             tags: query,
             lat: imgLat,
@@ -212,28 +213,27 @@ var loadFlickr = function(imgTag, imgLat, imgLng) {
             safe_search: 1,
             content_type: 1,
             radius: 2,
-            per_page: 6,
-            format:'json'},
+            per_page: 4,
+            format:'json'
+        },
         dataType: 'jsonp',
         success: clearTimeout(flickrRequestTimeout)
     });
 };
 
 function jsonFlickrApi (response) {
-    console.log(
-        "Got response from Flickr-API with the following photos: %o", 
-        response.photos
-    );
-    var photoset = response.photos.photo
-    var i = 0;
-    self.flickr.removeAll();
-    console.log(self.flickr());
-    for(image in photoset) {
-        var photoURL = 'http://farm' + photoset[image].farm + '.static.flickr.com/' + photoset[image].server + '/' + photoset[image].id + '_' + photoset[image].secret + '.jpg';
-        self.flickr.push(photoURL);
-        console.log(self.flickr());
+    if(response.stat != 'fail') {
+        var photoset = response.photos.photo
+        var i = 0;
+        self.flickr.removeAll();
+        for(image in photoset) {
+            var photoURL = 'http://farm' + photoset[image].farm + '.static.flickr.com/' + photoset[image].server + '/' + photoset[image].id + '_' + photoset[image].secret + '.jpg';
+            self.flickr.push(photoURL);
+        }
     }
-    console.log(self.flickr()[0]);
+    else {
+        console.log('FLICKR AJAX ERROR; Error Code: ' + response.code + '; Error message: ' + response.message);
+    }
 }
 
 var loadWiki = function(castle, marker) {
@@ -244,10 +244,16 @@ var loadWiki = function(castle, marker) {
 
     $.ajax({
         url: 'https://en.wikipedia.org/w/api.php',
-        data: { action: 'opensearch', search: castle, format: 'json', redirects: 'resolve'},
+        data: {
+            action: 'opensearch',
+            search: castle,
+            crossDomain: true,
+            format: 'json',
+            redirects: 'resolve'
+        },
         dataType: 'jsonp',
-        success : function(e) {
-            var title = e[1][0],
+        success: function(e) {
+            var title = e[0],
                 content = e[2][0],
                 link = e[3][0];
             var wikiContent = formatWikiArticle(title, content, link);
@@ -259,10 +265,22 @@ var loadWiki = function(castle, marker) {
 };
 
 function formatWikiArticle(title, description, url) {
-    var HTMLwikiArticle = '<h1 class="castle-title">%title%</h1><span class="castle-description">%description%</span><p><div><a href=%url% target="_blank">Link to Wikipedia article</a>';
+    var errorMessage = 'Sorry there does not seem to be an entry in Wikipedia for this castle.',
+        entry = '<span class="castle-description">%description%</span><p><div><a href=%url% target="_blank">Link to Wikipedia article</a>';
+
+
+    var HTMLwikiArticle = '<h1 class="castle-title">%title%</h1>%entry%';
     var wikiEntry = HTMLwikiArticle.replace('%title%', title);
-    wikiEntry = wikiEntry.replace('%description%',description);
-    wikiEntry = wikiEntry.replace('%url%',url);
+    if(typeof description == 'undefined') {
+        wikiEntry = wikiEntry.replace('%entry%',errorMessage);
+        wikiEntry = wikiEntry.replace('%url%','');
+    }
+    else {
+        wikiEntry = wikiEntry.replace('%entry%',entry);
+        wikiEntry = wikiEntry.replace('%description%',description);
+        wikiEntry = wikiEntry.replace('%url%',url);
+    }
+    
     return wikiEntry;
 }
 
@@ -272,7 +290,6 @@ function markerSelect(index, name, lat, lng) {
     arrMarkers[previousMarkerIndex].setIcon('images/castle-black15x15.png');
     arrMarkers[index].setIcon('images/castle-red15x15.png');
     loadFlickr(name, lat, lng);
-    console.log("done");
     previousMarkerIndex = index;
 }
 
@@ -303,7 +320,7 @@ function focusMarker(pos) {
 var infobubble = new InfoBubble({
         maxWidth: 300,
         hideCloseButton: true,
-        backgroundClassName: 'phoney'
+        //backgroundClassName: 'phoney'
 });
 
 var infobubble2 = new InfoBubble();

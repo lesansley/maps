@@ -15,35 +15,20 @@
             <div class="row search-container">
                 <input id="search-box" type="text" placeholder="Start typing the name of a castle" class="" data-bind="autoComplete: { selected: selectedCastle, options: options }" />
             </div>
+            <div class="row castle-img-wrapper">
+                <!-- ko with: selectedCastle() -->
+                <div class="row" data-bind="text: selectedCastle().name"></div>
+                <!-- /ko -->
+                <!-- ko with: flickr() -->
+                <div class="row" data-bind="foreach: flickr()">
+                    <figure class="col-3 col-sm-12">
+                        <img class="img-responsive" data-bind="attr:{src: $data}">
+                    </figure>
+                </div>
+                <!-- /ko -->
+            </div>
             <div class="map-container">
                 <div class="map" data-bind="googlemap: { castles: castles, centerLat: 55.166667, centerLng: -2 }"></div>
-            <div class="castle-img-wrapper">
-                <!-- ko with: selectedCastle() -->
-                    <div class="castle-img-title"><span  data-bind="text: selectedCastle().name"></span></div>
-                    <!-- /ko -->
-                    <div class="row">
-                        <!-- ko with: flickr()[0] -->
-                        <img class="col-4 img-responsive" data-bind="attr:{src: flickr()[0]}">
-                        <!-- /ko -->
-                        <!-- ko with: flickr()[1] -->
-                        <img class="col-4 img-responsive" data-bind="attr:{src: flickr()[1]}">
-                        <!-- /ko -->
-                        <!-- ko with: flickr()[2] -->
-                        <img class="col-4 img-responsive" data-bind="attr:{src: flickr()[2]}">
-                        <!-- /ko -->
-                    </div>
-                    <div class="row">
-                        <!-- ko with: flickr()[3] -->
-                        <img class="col-4 img-responsive" data-bind="attr:{src: flickr()[3]}">
-                        <!-- /ko -->
-                        <!-- ko with: flickr()[4] -->
-                        <img class="col-4 img-responsive" data-bind="attr:{src: flickr()[4]}">
-                        <!-- /ko -->
-                        <!-- ko with: flickr()[5] -->
-                        <img class="col-4 img-responsive" data-bind="attr:{src: flickr()[5]}">
-                        <!-- /ko -->
-                    </div> 
-                </div>
             </div>
         </div>
     </body>
