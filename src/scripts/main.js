@@ -44,7 +44,7 @@ var castleList = [
 function viewModel()  {
     var self = this;
 
-    self.castles = castleList.sort(function (l, r) { return l.name > r.name ? 1 : -1 });
+    self.castles = castleList.sort(function (l, r) { return l.name > r.name ? 1 : -1; });
     self.index = ko.observable();
     self.wiki = ko.observable();
     self.flickr = ko.observableArray();
@@ -58,7 +58,7 @@ function viewModel()  {
             object: element
         };
     });
-};
+}
 
 var map,
     arrMarkers = [],
@@ -82,8 +82,8 @@ ko.bindingHandlers.googlemap = {
             map.setCenter(center);
         });
 
-        var castleSites = castleObject.castles.sort(function (l, r) { return l.name > r.name ? 1 : -1 });
-        for (castle in castleSites)
+        var castleSites = castleObject.castles.sort(function (l, r) { return l.name > r.name ? 1 : -1; });
+        for (var castle in castleSites)
         {
             var latLng = convertToLatLng(
                 castleSites[castle].lat,
@@ -106,21 +106,20 @@ ko.bindingHandlers.googlemap = {
                     assignSelectedCastle(castle);
                     infobubble.close(map, marker);
                     markerSelect(index, castle.name, markerLat, markerLng);
-                    //$('.')
-                }
+                };
             })(marker));
 
             google.maps.event.addListener(marker, 'mouseover', (function(castle, marker) {
                 return function() {
                     var castleName = castleSites[castle].name;
                     loadWiki(castleName, marker);
-                }
+                };
             })(castle, marker));
 
             google.maps.event.addListener(marker, 'mouseout', (function(marker) {
                 return function(castleName) {
                     markerMouseOut(marker);
-                }
+                };
             })(marker));
             arrMarkers.push(marker);
         }
@@ -150,7 +149,7 @@ ko.bindingHandlers.autoComplete = {
             // Update our selectedCastle observable
             if(typeof ui.item !== "undefined") {
                 // ui.item - id|label|...
-                assignSelectedCastle(ui.item.object)
+                assignSelectedCastle(ui.item.object);
             }
         };
 
@@ -185,7 +184,7 @@ function findIndex(array, comparator) {
         if(castle.name == comparator) {
             return index;
         }
-    })
+    });
     return indexes;
 }
 
@@ -223,10 +222,10 @@ var loadFlickr = function(imgTag, imgLat, imgLng) {
 
 function jsonFlickrApi (response) {
     if(response.stat != 'fail') {
-        var photoset = response.photos.photo
+        var photoset = response.photos.photo;
         var i = 0;
         self.flickr.removeAll();
-        for(image in photoset) {
+        for(var image in photoset) {
             var photoURL = 'http://farm' + photoset[image].farm + '.static.flickr.com/' + photoset[image].server + '/' + photoset[image].id + '_' + photoset[image].secret + '.jpg';
             self.flickr.push(photoURL);
         }
