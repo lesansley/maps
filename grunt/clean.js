@@ -1,5 +1,5 @@
 module.exports = {
-    all: [
-        "dist/"
-    ]
+
+	all: ["dist/"]
+
 };

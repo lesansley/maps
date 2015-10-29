@@ -5,28 +5,13 @@ module.exports = {
         limit: 3
     },
 
-    // Dev tasks
-    devFirst: [
+    // Tasks
+    distFirst: [
         'clean',
         'jshint'
     ],
-    devSecond: [
-        'sass:dev',
+    distSecond: [
+        'cssmin',
         'uglify'
-    ],
-
-    // Production tasks
-    prodFirst: [
-        'clean',
-        'jshint'
-    ],
-    prodSecond: [
-        'sass:prod',
-        'uglify'
-    ],
-
-    // Image tasks
-    imgFirst: [
-        'imagemin'
     ]
 };
