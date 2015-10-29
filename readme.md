@@ -1,11 +1,11 @@
 #Neighbourhood Map Project
-I have developed a single-page application featuring a map of Northumberland county in the UK. I have added map markers to identify castles and an autocomplete search function to easily lookup the castles. I have implemented third-party APIs from Wikipeadia and Flickr to provide additional information and images about each of these locations.
+I have developed a single-page application featuring a map of Northumberland county in the UK. Map markers identify castles and there is an autocomplete search function for easy lookup of the castles. Third-party APIs provide additional information (Wikipedia) and images (Flickr) about each of these locations. (Where available.)
 
-Hovering over a marker will identiy the castle and provide a summary from Wikipedia along with a link to the full article. Clicking on a marker or selecting the castle from the seach box will centre the map on the slected castle, chane the icon colour from black to red and up to six Flickr images of the castle and surrounding areas will be displayed below the map.
+Hovering over a marker will identiy the castle and provide a summary from Wikipedia along with a link to the full article. Clicking on a marker or selecting the castle from the seach box will centre the map on the slected castle, change the icon colour from black to red and display up to six Flickr images of the castle and surrounding areas above the map. If there are no imgaes then just teh Castle name will appear in the heading.
+
+Knockout.js has been utilised to bind values to the DOM.
 
 Open `/src/index.html` to view the map.
-
-
 
 ##Installed Packages
 
@@ -52,8 +52,11 @@ Install Grunt (http://mattbailey.io/a-beginners-guide-to-grunt-redux/)
 ## KO with Google Maps
 http://jsfiddle.net/stesta/p3ZT4/
 
-## Responsive Maps
+## Responsive maps
 http://codepen.io/anon/pen/EVwRpP
 
 ## Infobubble documentation
 https://developer.here.com/javascript-apis/documentation/v3/maps/topics_api_nlp/h-ui-infobubble.html#h-ui-infobubble__setcontent
+
+## Flickr photo wall
+http://kylerush.net/blog/tutorial-flickr-api-javascript-jquery-ajax-json-build-detailed-photo-wall/
