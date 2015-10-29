@@ -5,7 +5,7 @@ Hovering over a marker will identiy the castle and provide a summary from Wikipe
 
 Knockout.js has been utilised to bind values to the DOM.
 
-Open `/src/index.html` to view the map.
+Open `/dist/index.html` to view the map.
 
 ##Installed Packages
 
