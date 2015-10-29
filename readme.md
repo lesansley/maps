@@ -19,3 +19,6 @@ https://developer.here.com/javascript-apis/documentation/v3/maps/topics_api_nlp/
 
 ## Flickr photo wall
 http://kylerush.net/blog/tutorial-flickr-api-javascript-jquery-ajax-json-build-detailed-photo-wall/
+
+## Autocomplete search bar
+http://cameron-verhelst.be/blog/2014/04/20/knockoutjs-autocomplete/
