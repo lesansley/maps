@@ -1,4 +1,4 @@
-#Neighbourhood Map Project
+# Neighbourhood Map Project
 
 This is a single-page application featuring a map of Northumberland county in the UK. Map markers identify castles and there is an autocomplete search function for easy lookup of the castles. Third-party APIs provide additional information (Wikipedia) and images (Flickr) about each of these locations. (Where available.)
 
